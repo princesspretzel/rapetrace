@@ -1,4 +1,4 @@
-/*from the GoogleMaps API*/
+/* adapted from the GoogleMaps API*/
 
 function initialize() {
 
@@ -23,8 +23,6 @@ function initialize() {
         var marker = new google.maps.Marker({
           position: myLatLng,
           map: map,
-          // TODO: make sure updated location is saved
-          draggable: true,
           title: 'Click to zoom'
           // icon: 'reddot.svg'
         });
@@ -46,22 +44,37 @@ function initialize() {
   var map = new google.maps.Map(document.getElementById('map-canvas'),
       mapOptions);
 
+  // set counter for cookies
+  var count;
+  if (!$.cookie('count')) {
+    $.cookie('count', 0);
+    count = 0
+  } else {
+    count = parseInt($.cookie('count'));
+  }
+
   // new marker on click
   google.maps.event.addListener(map, 'click', function(event) {
-    var lat = event.latLng.lat();
-    var lng = event.latLng.lng();
-    var myLatLng = new google.maps.LatLng(lat, lng);
-    var marker = new google.maps.Marker({
-      position: myLatLng,
-      map: map,
-      // TODO: make sure updated location is saved
-      draggable: true,
-      title: 'Click to zoom'
-      // icon: 'reddot.svg'
-    });
-    // send pin to Parse
-    var pin = new Pin();
-    pin.save({lat: myLatLng.lat()+'', lng: myLatLng.lng()+''})
+    if (count <= 5) {
+      count++;
+      $.cookie('count', count);
+      var lat = event.latLng.lat();
+      var lng = event.latLng.lng();
+      var myLatLng = new google.maps.LatLng(lat, lng);
+      var marker = new google.maps.Marker({
+        position: myLatLng,
+        map: map,
+        // TODO: make sure updated location is saved
+        draggable: true,
+        title: 'Click to zoom'
+        // icon: 'reddot.svg'
+      });
+      // send pin to Parse
+      var pin = new Pin();
+      pin.save({lat: myLatLng.lat()+'', lng: myLatLng.lng()+''})
+    } else {
+      alert("Sorry! You've exceeded the limit.");
+    }
   });
 
 }
