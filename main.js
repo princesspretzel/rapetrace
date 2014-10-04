@@ -9,6 +9,7 @@ function initialize() {
   var Pin = Parse.Object.extend("Pins");
   var query = new Parse.Query(Pin);
   query.exists("lat");
+  query.limit(1000);
   query.find({
     success: function(results) {
       console.log("Successfully retrieved " + results.length);
@@ -16,6 +17,17 @@ function initialize() {
       for (var i = 0; i < results.length; i++) { 
         var object = results[i];
         // show pins
+        var lat = object.get('lat')
+        var lng = object.get('lng')
+        var myLatLng = new google.maps.LatLng(lat, lng);
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          // TODO: make sure updated location is saved
+          draggable: true,
+          title: 'Click to zoom'
+          // icon: 'reddot.svg'
+        });
         console.log(object.id + ' - ' + object.get('lat', 'lng'));
       }
     },
